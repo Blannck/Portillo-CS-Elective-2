@@ -538,7 +538,7 @@ class TransactionTile extends StatelessWidget {
             ),
           ),
 
-          /
+          
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
