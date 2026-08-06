@@ -10,7 +10,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Fintech Wallet',
+      title: 'My Wallet',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         brightness: Brightness.light,
@@ -512,7 +512,6 @@ class TransactionTile extends StatelessWidget {
 
           const SizedBox(width: 14),
 
-         
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -538,7 +537,6 @@ class TransactionTile extends StatelessWidget {
             ),
           ),
 
-          
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
