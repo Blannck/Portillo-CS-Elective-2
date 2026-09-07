@@ -5,12 +5,6 @@ import '../models/product.dart';
 import '../widgets/product_card.dart';
 import '../widgets/shopify_app_bar.dart';
 
-/// The main landing screen showing all products in a responsive grid.
-///
-/// [StatefulWidget] justification:
-///   - Owns [_searchQuery] — changes on every keystroke, triggers grid filter.
-///   - Owns [_selectedCategory] — changes on chip tap, drives category filter.
-///   Both of these mutations require [setState] to rebuild the product grid.
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -23,9 +17,9 @@ class _HomeScreenState extends State<HomeScreen> {
   String _searchQuery = '';
   String? _selectedCategory; // null = "All"
 
-  /// Unique sorted category list derived from the product catalogue.
-  static final List<String> _categories =
-      ({for (final p in kProducts) p.category}).toList()..sort();
+  static final List<String> _categories = ({
+    for (final p in kProducts) p.category,
+  }).toList()..sort();
 
   @override
   void dispose() {
@@ -38,7 +32,8 @@ class _HomeScreenState extends State<HomeScreen> {
       final matchesCat =
           _selectedCategory == null || p.category == _selectedCategory;
       final q = _searchQuery.toLowerCase();
-      final matchesSearch = q.isEmpty ||
+      final matchesSearch =
+          q.isEmpty ||
           p.name.toLowerCase().contains(q) ||
           p.category.toLowerCase().contains(q) ||
           p.description.toLowerCase().contains(q);
@@ -51,23 +46,19 @@ class _HomeScreenState extends State<HomeScreen> {
     final theme = Theme.of(context);
     final filtered = _filteredProducts;
 
-    // Key that changes whenever the active filter changes — drives AnimatedSwitcher.
     final filterKey = '${_selectedCategory ?? 'all'}-$_searchQuery';
 
     return Scaffold(
       appBar: const ShopifyAppBar(title: 'Shopify'),
       body: CustomScrollView(
         slivers: [
-          // ── Hero banner ──────────────────────────────────────────────────
           SliverToBoxAdapter(child: _HeroBanner()),
 
-          // ── Search & Filter bar ──────────────────────────────────────────
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
               child: Row(
                 children: [
-                  // Search field
                   Expanded(
                     child: TextField(
                       controller: _searchController,
@@ -90,7 +81,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   const SizedBox(width: 10),
 
-                  // Compact Filter dropdown
                   _CompactCategoryFilter(
                     categories: _categories,
                     selectedCategory: _selectedCategory,
@@ -102,7 +92,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
-          // ── Section heading with animated item count ──────────────────────
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
@@ -125,14 +114,17 @@ class _HomeScreenState extends State<HomeScreen> {
                         if (_selectedCategory != null) ...[
                           const SizedBox(width: 8),
                           InkWell(
-                            onTap: () => setState(() => _selectedCategory = null),
+                            onTap: () =>
+                                setState(() => _selectedCategory = null),
                             borderRadius: BorderRadius.circular(12),
                             child: Padding(
                               padding: const EdgeInsets.all(2),
                               child: Icon(
                                 Icons.cancel_outlined,
                                 size: 16,
-                                color: theme.colorScheme.onSurface.withAlpha(140),
+                                color: theme.colorScheme.onSurface.withAlpha(
+                                  140,
+                                ),
                               ),
                             ),
                           ),
@@ -140,7 +132,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                   ),
-                  // Animated count so the number cross-fades when filter changes
                   AnimatedSwitcher(
                     duration: const Duration(milliseconds: 200),
                     child: Text(
@@ -154,40 +145,30 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
-          // ── Responsive animated product grid ──────────────────────────────
-          // SliverLayoutBuilder detects available width:
-          //   < 600dp  → 2 columns (phone)
-          //   ≥ 600dp  → 3+ columns (tablet/desktop)
           SliverPadding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
             sliver: SliverLayoutBuilder(
               builder: (context, constraints) {
-                final crossAxisCount =
-                    constraints.crossAxisExtent < 600 ? 2 : 3;
+                final crossAxisCount = constraints.crossAxisExtent < 600
+                    ? 2
+                    : 3;
 
                 if (filtered.isEmpty) {
                   return SliverToBoxAdapter(child: _EmptyState());
                 }
 
                 return SliverToBoxAdapter(
-                  // AnimatedSwitcher fades the whole grid in/out whenever
-                  // the active filter key changes (category or search query).
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 280),
                     switchInCurve: Curves.easeOutCubic,
                     switchOutCurve: Curves.easeInCubic,
-                    transitionBuilder: (child, anim) => FadeTransition(
-                      opacity: anim,
-                      child: child,
-                    ),
+                    transitionBuilder: (child, anim) =>
+                        FadeTransition(opacity: anim, child: child),
                     child: GridView.builder(
-                      // Key changes force AnimatedSwitcher to treat this as
-                      // a new widget tree and play the cross-fade animation.
                       key: ValueKey(filterKey),
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate:
-                          SliverGridDelegateWithFixedCrossAxisCount(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: crossAxisCount,
                         crossAxisSpacing: 12,
                         mainAxisSpacing: 12,
@@ -195,9 +176,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       itemCount: filtered.length,
                       itemBuilder: (context, index) => _AnimatedGridItem(
-                        // ValueKey ties each card to its product, so Flutter
-                        // knows exactly which item appeared / disappeared when
-                        // the list is filtered.
                         key: ValueKey(filtered[index].id),
                         index: index,
                         child: ProductCard(product: filtered[index]),
@@ -214,11 +192,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// ── Compact Minimalist Category Dropdown ─────────────────────────────────────
-
-/// A compact button with an aesthetic dropdown menu for category filtering.
-///
-/// [StatelessWidget] — reads active state and triggers callback on selection.
 class _CompactCategoryFilter extends StatelessWidget {
   final List<String> categories;
   final String? selectedCategory;
@@ -271,7 +244,9 @@ class _CompactCategoryFilter extends StatelessWidget {
                   'All Categories',
                   style: TextStyle(
                     fontSize: 13,
-                    fontWeight: !hasActiveFilter ? FontWeight.w600 : FontWeight.w400,
+                    fontWeight: !hasActiveFilter
+                        ? FontWeight.w600
+                        : FontWeight.w400,
                     color: !hasActiveFilter
                         ? theme.colorScheme.primary
                         : theme.colorScheme.onSurface,
@@ -279,7 +254,11 @@ class _CompactCategoryFilter extends StatelessWidget {
                 ),
                 const Spacer(),
                 if (!hasActiveFilter)
-                  Icon(Icons.check_rounded, size: 16, color: theme.colorScheme.primary),
+                  Icon(
+                    Icons.check_rounded,
+                    size: 16,
+                    color: theme.colorScheme.primary,
+                  ),
               ],
             ),
           ),
@@ -302,7 +281,9 @@ class _CompactCategoryFilter extends StatelessWidget {
                     cat,
                     style: TextStyle(
                       fontSize: 13,
-                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                      fontWeight: isSelected
+                          ? FontWeight.w600
+                          : FontWeight.w400,
                       color: isSelected
                           ? theme.colorScheme.primary
                           : theme.colorScheme.onSurface,
@@ -310,7 +291,11 @@ class _CompactCategoryFilter extends StatelessWidget {
                   ),
                   const Spacer(),
                   if (isSelected)
-                    Icon(Icons.check_rounded, size: 16, color: theme.colorScheme.primary),
+                    Icon(
+                      Icons.check_rounded,
+                      size: 16,
+                      color: theme.colorScheme.primary,
+                    ),
                 ],
               ),
             );
@@ -325,11 +310,13 @@ class _CompactCategoryFilter extends StatelessWidget {
           color: hasActiveFilter
               ? theme.colorScheme.primary.withAlpha(20)
               : (theme.brightness == Brightness.dark
-                  ? const Color(0xFF21262D)
-                  : const Color(0xFFF1F1F1)),
+                    ? const Color(0xFF21262D)
+                    : const Color(0xFFF1F1F1)),
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: hasActiveFilter ? theme.colorScheme.primary : Colors.transparent,
+            color: hasActiveFilter
+                ? theme.colorScheme.primary
+                : Colors.transparent,
             width: 1.2,
           ),
         ),
@@ -386,15 +373,6 @@ class _CompactCategoryFilter extends StatelessWidget {
   }
 }
 
-// ── Staggered grid item ───────────────────────────────────────────────────────
-
-/// Wraps each product card with a staggered fade + slide-up entrance animation.
-///
-/// [StatefulWidget] justification:
-///   - Owns an [AnimationController] that drives the enter animation.
-///   - Uses a [Future.delayed] stagger based on [index] so cards ripple in
-///     sequentially rather than all appearing at once.
-///   - The animation runs once on first build and is not driven by user input.
 class _AnimatedGridItem extends StatefulWidget {
   final int index;
   final Widget child;
@@ -429,11 +407,7 @@ class _AnimatedGridItemState extends State<_AnimatedGridItem>
       end: Offset.zero,
     ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOutCubic));
 
-    // Stagger: each successive item starts slightly later (max 180 ms delay).
-    // Items 0-5 stagger visually; items beyond index 5 all share the max delay
-    // so the effect is snappy rather than dragging on for 12 items.
-    final delay =
-        Duration(milliseconds: (widget.index * 40).clamp(0, 180));
+    final delay = Duration(milliseconds: (widget.index * 40).clamp(0, 180));
     Future.delayed(delay, () {
       if (mounted) _ctrl.forward();
     });
@@ -454,7 +428,6 @@ class _AnimatedGridItemState extends State<_AnimatedGridItem>
   }
 }
 
-// ── Hero Banner ───────────────────────────────────────────────────────────────
 class _HeroBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -554,7 +527,6 @@ class _HeroBanner extends StatelessWidget {
   }
 }
 
-// ── Empty state ───────────────────────────────────────────────────────────────
 class _EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -576,8 +548,10 @@ class _EmptyState extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 4),
-          Text('Try a different search or category',
-              style: theme.textTheme.bodySmall),
+          Text(
+            'Try a different search or category',
+            style: theme.textTheme.bodySmall,
+          ),
         ],
       ),
     );

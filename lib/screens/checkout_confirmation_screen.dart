@@ -6,16 +6,6 @@ import '../providers/cart_provider.dart';
 import '../widgets/cart_item_tile.dart';
 import '../widgets/shopify_app_bar.dart';
 
-/// Final checkout confirmation screen shown after the user completes purchase.
-///
-/// Reachable only after at least one item is in the cart — enforced by the
-/// go_router redirect guard in [AppRouter].
-///
-/// [StatelessWidget] justification:
-///   - This screen only reads a snapshot of the cart and displays it.
-///   - It never mutates data and has no interactive state after being built.
-///   - The "Continue Shopping" action navigates away, clearing the cart —
-///     that mutation happens in [CartProvider] (ChangeNotifier), not here.
 class CheckoutConfirmationScreen extends StatelessWidget {
   const CheckoutConfirmationScreen({super.key});
 
@@ -23,56 +13,44 @@ class CheckoutConfirmationScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final cart = context.read<CartProvider>();
-    // Snapshot the cart items BEFORE clearing, so the summary remains visible.
     final items = List.of(cart.items);
     final subtotal = cart.totalPrice;
     final shipping = subtotal >= 50 ? 0.0 : 5.99;
     final total = subtotal + shipping;
 
     return Scaffold(
-      appBar: const ShopifyAppBar(
-        title: 'Order Confirmed',
-      ),
+      appBar: const ShopifyAppBar(title: 'Order Confirmed'),
       body: CustomScrollView(
         slivers: [
-          // ── Success banner ──────────────────────────────────────────────
-          SliverToBoxAdapter(
-            child: _SuccessBanner(),
-          ),
+          SliverToBoxAdapter(child: _SuccessBanner()),
 
-          // ── Order summary heading ───────────────────────────────────────
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(20, 24, 20, 8),
-              child: Text('Order Summary', style: theme.textTheme.headlineSmall),
+              child: Text(
+                'Order Summary',
+                style: theme.textTheme.headlineSmall,
+              ),
             ),
           ),
 
-          // ── Items list (read-only) ──────────────────────────────────────
           SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) {
-                if (index == items.length) {
-                  return const Divider(height: 1);
-                }
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
-                    children: [
-                      if (index > 0) const Divider(height: 1),
-                      CartItemTile(
-                        item: items[index],
-                        showControls: false, // Read-only on confirmation
-                      ),
-                    ],
-                  ),
-                );
-              },
-              childCount: items.length + 1,
-            ),
+            delegate: SliverChildBuilderDelegate((context, index) {
+              if (index == items.length) {
+                return const Divider(height: 1);
+              }
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  children: [
+                    if (index > 0) const Divider(height: 1),
+                    CartItemTile(item: items[index], showControls: false),
+                  ],
+                ),
+              );
+            }, childCount: items.length + 1),
           ),
 
-          // ── Price breakdown ─────────────────────────────────────────────
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
@@ -119,7 +97,6 @@ class CheckoutConfirmationScreen extends StatelessWidget {
             ),
           ),
 
-          // ── Confirmation message ────────────────────────────────────────
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
@@ -164,7 +141,6 @@ class CheckoutConfirmationScreen extends StatelessWidget {
             ),
           ),
 
-          // ── Continue shopping button ────────────────────────────────────
           SliverToBoxAdapter(
             child: Padding(
               padding: EdgeInsets.fromLTRB(
@@ -181,7 +157,6 @@ class CheckoutConfirmationScreen extends StatelessWidget {
                       icon: const Icon(Icons.storefront_outlined),
                       label: const Text('Continue Shopping'),
                       onPressed: () {
-                        // Clear the cart and return to home
                         context.read<CartProvider>().clearCart();
                         context.go('/');
                       },
@@ -212,8 +187,6 @@ class CheckoutConfirmationScreen extends StatelessWidget {
     );
   }
 }
-
-// ── Supporting widgets ────────────────────────────────────────────────────────
 
 class _SuccessBanner extends StatelessWidget {
   @override

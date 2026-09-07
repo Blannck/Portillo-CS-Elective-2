@@ -1,8 +1,3 @@
-/// Represents a single product in the store.
-///
-/// This is an immutable data class — all fields are final.
-/// ProductCard widgets that display this never need to mutate it,
-/// which is why ProductCard is a StatelessWidget.
 class Product {
   final String id;
   final String name;

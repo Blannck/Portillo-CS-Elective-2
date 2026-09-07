@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// Defines the Shopify-inspired light and dark [ThemeData] for the entire app.
-///
-/// All color and typography values are centralized here.
-/// Individual widgets must NEVER hardcode colors — they reference [Theme.of(context)].
 class AppTheme {
   AppTheme._();
 
-  // ── Brand palette ──────────────────────────────────────────────────────────
   static const Color _shopifyGreen = Color(0xFF008060);
   static const Color _shopifyGreenDark = Color(0xFF004C3F);
   static const Color _shopifyGreenLight = Color(0xFFCEEDD8);
@@ -25,7 +20,6 @@ class AppTheme {
   static const Color _cardDark = Color(0xFF161B22);
   static const Color _onSurfaceDark = Color(0xFFE6EDF3);
 
-  // ── Shared text theme helper ───────────────────────────────────────────────
   static TextTheme _buildTextTheme(Color base) {
     return GoogleFonts.interTextTheme(
       TextTheme(
@@ -47,7 +41,6 @@ class AppTheme {
           fontWeight: FontWeight.w600,
           color: base,
         ),
-        // Title styles (AppBar, card title)
         titleLarge: TextStyle(
           fontSize: 17,
           fontWeight: FontWeight.w600,
@@ -80,7 +73,6 @@ class AppTheme {
     );
   }
 
-  // ── Light Theme ────────────────────────────────────────────────────────────
   static ThemeData get lightTheme {
     final colorScheme = ColorScheme.fromSeed(
       seedColor: _shopifyGreen,

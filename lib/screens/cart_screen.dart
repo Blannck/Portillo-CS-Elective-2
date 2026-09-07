@@ -6,15 +6,6 @@ import '../providers/cart_provider.dart';
 import '../widgets/cart_item_tile.dart';
 import '../widgets/shopify_app_bar.dart';
 
-/// Shopping cart screen showing all added items with live quantity controls.
-///
-/// [StatefulWidget] justification:
-///   - While cart state itself lives in [CartProvider], this screen needs to
-///     rebuild immediately on quantity changes (increment/decrement). Using
-///     [Consumer] handles provider rebuilds, but the screen also manages its
-///     own local UI state such as which item (if any) is being swiped to delete.
-///   - The running total displayed in the bottom bar updates live — this is
-///     derived from [CartProvider] state and rebuilds via [Consumer].
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
 
@@ -26,10 +17,7 @@ class _CartScreenState extends State<CartScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const ShopifyAppBar(
-        title: 'Your Bag',
-        showBackButton: true,
-      ),
+      appBar: const ShopifyAppBar(title: 'Your Bag', showBackButton: true),
       body: Consumer<CartProvider>(
         builder: (context, cart, _) {
           if (!cart.isNotEmpty) {
@@ -38,7 +26,6 @@ class _CartScreenState extends State<CartScreen> {
 
           return Column(
             children: [
-              // ── Cart item list ─────────────────────────────────────────
               Expanded(
                 child: ListView.separated(
                   padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
@@ -51,13 +38,17 @@ class _CartScreenState extends State<CartScreen> {
                       showControls: true,
                       onIncrement: () => cart.incrementItem(item.product.id),
                       onDecrement: () => cart.decrementItem(item.product.id),
-                      onRemove: () => _confirmRemove(context, cart, item.product.id, item.product.name),
+                      onRemove: () => _confirmRemove(
+                        context,
+                        cart,
+                        item.product.id,
+                        item.product.name,
+                      ),
                     );
                   },
                 ),
               ),
 
-              // ── Order summary + checkout ───────────────────────────────
               _OrderSummaryPanel(cart: cart),
             ],
           );
@@ -66,7 +57,6 @@ class _CartScreenState extends State<CartScreen> {
     );
   }
 
-  /// Shows a snackbar-style confirmation before removing an item.
   void _confirmRemove(
     BuildContext context,
     CartProvider cart,
@@ -90,9 +80,6 @@ class _CartScreenState extends State<CartScreen> {
   }
 }
 
-// ── Order summary panel ───────────────────────────────────────────────────────
-/// [StatelessWidget] — reads from [CartProvider] snapshot passed from parent.
-/// Displays subtotal breakdown and the checkout CTA button.
 class _OrderSummaryPanel extends StatelessWidget {
   final CartProvider cart;
 
@@ -126,14 +113,12 @@ class _OrderSummaryPanel extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Subtotal row
           _SummaryRow(
             label: 'Subtotal (${cart.itemCount} items)',
             value: '\$${subtotal.toStringAsFixed(2)}',
           ),
           const SizedBox(height: 6),
 
-          // Shipping row
           _SummaryRow(
             label: 'Shipping',
             value: shipping == 0 ? 'Free' : '\$${shipping.toStringAsFixed(2)}',
@@ -143,7 +128,6 @@ class _OrderSummaryPanel extends StatelessWidget {
           Divider(),
           const SizedBox(height: 10),
 
-          // Total row
           _SummaryRow(
             label: 'Total',
             value: '\$${total.toStringAsFixed(2)}',
@@ -151,7 +135,6 @@ class _OrderSummaryPanel extends StatelessWidget {
           ),
           const SizedBox(height: 16),
 
-          // Checkout button
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
@@ -189,16 +172,12 @@ class _SummaryRow extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(label, style: style),
-        Text(
-          value,
-          style: style?.copyWith(color: valueColor),
-        ),
+        Text(value, style: style?.copyWith(color: valueColor)),
       ],
     );
   }
 }
 
-// ── Empty cart ────────────────────────────────────────────────────────────────
 class _EmptyCart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

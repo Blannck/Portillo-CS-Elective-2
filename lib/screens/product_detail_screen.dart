@@ -7,15 +7,6 @@ import '../models/product.dart';
 import '../providers/cart_provider.dart';
 import '../widgets/shopify_app_bar.dart';
 
-/// Displays full details for a single product.
-///
-/// Reached via go_router's [GoRoute] at `/product/:id` — Navigation 2.0.
-///
-/// [StatefulWidget] justification:
-///   - Owns [_addedToCart] — a boolean that flips when the user taps
-///     "Add to Cart", changing the button's icon and label ("Add to Cart" →
-///     "Added to Bag ✓"). This transient UI state doesn't belong in CartProvider.
-///   - Owns [_imageLoading] to show a shimmer while the hero image loads.
 class ProductDetailScreen extends StatefulWidget {
   final Product product;
 
@@ -52,12 +43,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
 
   void _handleAddToCart() {
     if (_addedToCart) {
-      // Already added — navigate to cart
       context.push('/cart');
       return;
     }
 
-    // Animate button press
     _buttonController.reverse().then((_) => _buttonController.forward());
 
     context.read<CartProvider>().addItem(widget.product);
@@ -70,13 +59,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
     final product = widget.product;
 
     return Scaffold(
-      appBar: ShopifyAppBar(
-        title: 'Product Details',
-        showBackButton: true,
-      ),
+      appBar: ShopifyAppBar(title: 'Product Details', showBackButton: true),
       body: CustomScrollView(
         slivers: [
-          // ── Product image (Hero animation from grid) ───────────────────
           SliverToBoxAdapter(
             child: Hero(
               tag: 'product-image-${product.id}',
@@ -107,24 +92,20 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
             ),
           ),
 
-          // ── Product details ────────────────────────────────────────────
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Category chip
                   Chip(label: Text(product.category)),
 
                   const SizedBox(height: 10),
 
-                  // Product name
                   Text(product.name, style: theme.textTheme.headlineMedium),
 
                   const SizedBox(height: 8),
 
-                  // Price
                   Text(
                     '\$${product.price.toStringAsFixed(2)}',
                     style: theme.textTheme.headlineSmall?.copyWith(
@@ -135,7 +116,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
 
                   const SizedBox(height: 12),
 
-                  // Rating bar
                   _RatingRow(
                     rating: product.rating,
                     reviewCount: product.reviewCount,
@@ -147,19 +127,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
 
                   const SizedBox(height: 16),
 
-                  // Description heading
                   Text('Description', style: theme.textTheme.titleMedium),
                   const SizedBox(height: 8),
 
-                  // Product description
-                  Text(
-                    product.description,
-                    style: theme.textTheme.bodyLarge,
-                  ),
+                  Text(product.description, style: theme.textTheme.bodyLarge),
 
                   const SizedBox(height: 24),
 
-                  // Shipping info
                   _InfoRow(
                     icon: Icons.local_shipping_outlined,
                     label: 'Free shipping on orders over \$50',
@@ -175,7 +149,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
                     label: '2-year quality guarantee',
                   ),
 
-                  // Bottom padding for sticky button
                   const SizedBox(height: 100),
                 ],
               ),
@@ -184,7 +157,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
         ],
       ),
 
-      // ── Sticky "Add to Cart" bottom bar ─────────────────────────────────
       bottomNavigationBar: Container(
         padding: EdgeInsets.fromLTRB(
           20,
@@ -194,13 +166,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
         ),
         decoration: BoxDecoration(
           color: theme.cardTheme.color,
-          border: Border(
-            top: BorderSide(color: theme.dividerColor),
-          ),
+          border: Border(top: BorderSide(color: theme.dividerColor)),
         ),
         child: Row(
           children: [
-            // Quantity in cart indicator
             Consumer<CartProvider>(
               builder: (context, cart, _) {
                 final qty = cart.quantityOf(product.id);
@@ -226,7 +195,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
               },
             ),
 
-            // Add to Cart button — state changes to "Added ✓" after first tap
             Expanded(
               child: ScaleTransition(
                 scale: _scaleAnimation,
@@ -258,10 +226,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
   }
 }
 
-// ── Supporting StatelessWidgets ───────────────────────────────────────────────
-
-/// Displays star rating and review count.
-/// [StatelessWidget] — purely derived from passed-in numbers.
 class _RatingRow extends StatelessWidget {
   final double rating;
   final int reviewCount;
@@ -276,32 +240,34 @@ class _RatingRow extends StatelessWidget {
 
     return Row(
       children: [
-        // Filled stars
         for (int i = 0; i < fullStars; i++)
           const Icon(Icons.star_rounded, size: 18, color: Color(0xFFFFC200)),
-        // Half star
         if (hasHalf)
-          const Icon(Icons.star_half_rounded, size: 18, color: Color(0xFFFFC200)),
-        // Empty stars
+          const Icon(
+            Icons.star_half_rounded,
+            size: 18,
+            color: Color(0xFFFFC200),
+          ),
         for (int i = fullStars + (hasHalf ? 1 : 0); i < 5; i++)
-          Icon(Icons.star_outline_rounded,
-              size: 18, color: const Color(0xFFFFC200)),
+          Icon(
+            Icons.star_outline_rounded,
+            size: 18,
+            color: const Color(0xFFFFC200),
+          ),
 
         const SizedBox(width: 6),
         Text(
           rating.toStringAsFixed(1),
-          style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
+          style: theme.textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.w700,
+          ),
         ),
-        Text(
-          '  ·  $reviewCount reviews',
-          style: theme.textTheme.bodySmall,
-        ),
+        Text('  ·  $reviewCount reviews', style: theme.textTheme.bodySmall),
       ],
     );
   }
 }
 
-/// A simple icon + label info row.
 class _InfoRow extends StatelessWidget {
   final IconData icon;
   final String label;
@@ -315,9 +281,7 @@ class _InfoRow extends StatelessWidget {
       children: [
         Icon(icon, size: 18, color: theme.colorScheme.primary),
         const SizedBox(width: 10),
-        Expanded(
-          child: Text(label, style: theme.textTheme.bodyMedium),
-        ),
+        Expanded(child: Text(label, style: theme.textTheme.bodyMedium)),
       ],
     );
   }
