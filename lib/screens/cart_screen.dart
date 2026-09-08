@@ -6,6 +6,7 @@ import '../providers/cart_provider.dart';
 import '../widgets/cart_item_tile.dart';
 import '../widgets/shopify_app_bar.dart';
 
+/// Shopping bag screen rendering line items, quantity controls, and order total calculation.
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
 
@@ -20,12 +21,14 @@ class _CartScreenState extends State<CartScreen> {
       appBar: const ShopifyAppBar(title: 'Your Bag', showBackButton: true),
       body: Consumer<CartProvider>(
         builder: (context, cart, _) {
+          // Render empty state if bag contains no items
           if (!cart.isNotEmpty) {
             return _EmptyCart();
           }
 
           return Column(
             children: [
+              // Scrollable list of items in the cart
               Expanded(
                 child: ListView.separated(
                   padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
@@ -49,6 +52,7 @@ class _CartScreenState extends State<CartScreen> {
                 ),
               ),
 
+              // Bottom order summary panel (subtotal, shipping, checkout CTA)
               _OrderSummaryPanel(cart: cart),
             ],
           );
@@ -57,6 +61,7 @@ class _CartScreenState extends State<CartScreen> {
     );
   }
 
+  /// Removes an item from the cart and displays a temporary notification SnackBar.
   void _confirmRemove(
     BuildContext context,
     CartProvider cart,
@@ -80,7 +85,9 @@ class _CartScreenState extends State<CartScreen> {
   }
 }
 
+/// Bottom summary container calculating subtotal, conditional free shipping ($50+), and grand total.
 class _OrderSummaryPanel extends StatelessWidget {
+
   final CartProvider cart;
 
   const _OrderSummaryPanel({required this.cart});

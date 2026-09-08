@@ -5,6 +5,7 @@ import '../models/product.dart';
 import '../widgets/product_card.dart';
 import '../widgets/shopify_app_bar.dart';
 
+/// Primary storefront view displaying product catalog grid, search bar, and category filter.
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -15,8 +16,9 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
-  String? _selectedCategory; // null = "All"
+  String? _selectedCategory; // null represents "All Categories"
 
+  // Dynamically extract unique categories from catalog list and sort alphabetically
   static final List<String> _categories = ({
     for (final p in kProducts) p.category,
   }).toList()..sort();
@@ -27,6 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
+  /// Computes filtered products list based on active category filter and search query string.
   List<Product> get _filteredProducts {
     return kProducts.where((p) {
       final matchesCat =
@@ -43,6 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+
     final theme = Theme.of(context);
     final filtered = _filteredProducts;
 
@@ -192,6 +196,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
+/// Popup menu dropdown widget allowing users to select a category filter.
 class _CompactCategoryFilter extends StatelessWidget {
   final List<String> categories;
   final String? selectedCategory;
@@ -355,6 +360,7 @@ class _CompactCategoryFilter extends StatelessWidget {
     );
   }
 
+  /// Returns contextual icon corresponding to category name.
   IconData _iconForCategory(String category) {
     switch (category.toLowerCase()) {
       case 'apparel':
@@ -373,6 +379,7 @@ class _CompactCategoryFilter extends StatelessWidget {
   }
 }
 
+/// Staggered grid item wrapper providing index-delayed fade and slide entry animations.
 class _AnimatedGridItem extends StatefulWidget {
   final int index;
   final Widget child;
@@ -407,6 +414,7 @@ class _AnimatedGridItemState extends State<_AnimatedGridItem>
       end: Offset.zero,
     ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOutCubic));
 
+    // Stagger animation start by grid item index
     final delay = Duration(milliseconds: (widget.index * 40).clamp(0, 180));
     Future.delayed(delay, () {
       if (mounted) _ctrl.forward();
@@ -428,7 +436,9 @@ class _AnimatedGridItemState extends State<_AnimatedGridItem>
   }
 }
 
+/// Promotional top banner widget displayed above the product grid.
 class _HeroBanner extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);

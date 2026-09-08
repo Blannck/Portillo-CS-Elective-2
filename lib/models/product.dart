@@ -1,3 +1,4 @@
+/// Immutable model representing an e-commerce product in the store catalog.
 class Product {
   final String id;
   final String name;
@@ -19,3 +20,4 @@ class Product {
     required this.reviewCount,
   });
 }
+

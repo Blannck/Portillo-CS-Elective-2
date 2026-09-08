@@ -1,6 +1,8 @@
 import '../models/product.dart';
 
+/// Static mock product catalog containing curated store items, prices, ratings, and image URLs.
 const List<Product> kProducts = [
+
   Product(
     id: '1',
     name: 'Classic White Tee',

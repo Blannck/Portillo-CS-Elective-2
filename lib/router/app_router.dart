@@ -9,9 +9,15 @@ import '../screens/checkout_confirmation_screen.dart';
 import '../screens/home_screen.dart';
 import '../screens/product_detail_screen.dart';
 
+/// Declarative application router configuration built with [GoRouter].
+
+/// 
+/// Defines app navigation structure, parameter parsing, route redirect guards,
+/// and smooth custom transition animations for page navigation.
 final GoRouter appRouter = GoRouter(
   initialLocation: '/',
   routes: [
+    // ── Home Screen Route ──────────────────────────────────────────────────
     GoRoute(
       path: '/',
       name: 'home',
@@ -23,11 +29,15 @@ final GoRouter appRouter = GoRouter(
         transitionsBuilder: _homeTransition,
       ),
     ),
+
+    // ── Product Details Route (with dynamic ID parameter) ─────────────────
     GoRoute(
       path: '/product/:id',
       name: 'product-detail',
       pageBuilder: (context, state) {
+        // Extract product ID parameter from URL path
         final id = state.pathParameters['id']!;
+        // Lookup product from catalog dataset
         final product = kProducts.firstWhere(
           (p) => p.id == id,
           orElse: () => kProducts.first,
@@ -41,6 +51,8 @@ final GoRouter appRouter = GoRouter(
         );
       },
     ),
+
+    // ── Cart Screen Route ─────────────────────────────────────────────────
     GoRoute(
       path: '/cart',
       name: 'cart',
@@ -52,9 +64,12 @@ final GoRouter appRouter = GoRouter(
         transitionsBuilder: _slideRightTransition,
       ),
     ),
+
+    // ── Checkout Confirmation Route (with Route Guard) ───────────────────
     GoRoute(
       path: '/checkout',
       name: 'checkout',
+      // Navigation Guard: Redirects user back to /cart if cart is empty
       redirect: (context, state) {
         final cart = context.read<CartProvider>();
         if (!cart.isNotEmpty) return '/cart';
@@ -70,10 +85,12 @@ final GoRouter appRouter = GoRouter(
     ),
   ],
 
+  // Fallback 404 page for unmatched routes
   errorBuilder: (context, state) =>
       Scaffold(body: Center(child: Text('Page not found: ${state.uri}'))),
 );
 
+/// Custom transition builder for Home Screen (fade with subtle push-back translation).
 Widget _homeTransition(
   BuildContext context,
   Animation<double> animation,
@@ -95,6 +112,7 @@ Widget _homeTransition(
   );
 }
 
+/// Custom slide-right transition builder for detail and cart screens.
 Widget _slideRightTransition(
   BuildContext context,
   Animation<double> animation,
@@ -123,6 +141,7 @@ Widget _slideRightTransition(
   );
 }
 
+/// Custom slide-up modal transition builder for checkout confirmation.
 Widget _slideUpTransition(
   BuildContext context,
   Animation<double> animation,
@@ -145,3 +164,4 @@ Widget _slideUpTransition(
     ),
   );
 }
+

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+/// Centralized design system class defining colors, typography (Google Fonts Inter),
+/// and Material 3 theme configurations ([lightTheme] and [darkTheme]).
 class AppTheme {
   AppTheme._();
+
 
   static const Color _shopifyGreen = Color(0xFF008060);
   static const Color _shopifyGreenDark = Color(0xFF004C3F);

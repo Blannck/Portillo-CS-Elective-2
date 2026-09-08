@@ -6,6 +6,10 @@ import '../providers/cart_provider.dart';
 import '../widgets/cart_item_tile.dart';
 import '../widgets/shopify_app_bar.dart';
 
+/// Order placement confirmation screen.
+/// 
+/// Displays receipt breakdown for purchased items, payment status banner,
+/// order number, and clears the cart state upon user returning to the store.
 class CheckoutConfirmationScreen extends StatelessWidget {
   const CheckoutConfirmationScreen({super.key});
 
@@ -23,6 +27,7 @@ class CheckoutConfirmationScreen extends StatelessWidget {
       body: CustomScrollView(
         slivers: [
           SliverToBoxAdapter(child: _SuccessBanner()),
+
 
           SliverToBoxAdapter(
             child: Padding(
@@ -188,9 +193,11 @@ class CheckoutConfirmationScreen extends StatelessWidget {
   }
 }
 
+/// Visual confirmation header displaying checkmark icon and generated order ID badge.
 class _SuccessBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+
     final theme = Theme.of(context);
     return Container(
       margin: const EdgeInsets.all(20),

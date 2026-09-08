@@ -7,6 +7,10 @@ import '../models/product.dart';
 import '../providers/cart_provider.dart';
 import '../widgets/shopify_app_bar.dart';
 
+/// Screen displaying full details for a selected [Product].
+/// 
+/// Shows hero image, title, price, star ratings, description, and shipping perks.
+/// Includes an interactive "Add to Bag" button with scale animation and cart navigation.
 class ProductDetailScreen extends StatefulWidget {
   final Product product;
 
@@ -25,6 +29,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
   @override
   void initState() {
     super.initState();
+    // Setup button press feedback scale animation
     _buttonController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 150),
@@ -41,6 +46,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
     super.dispose();
   }
 
+  /// Handles "Add to Bag" button taps.
+  /// 
+  /// Triggers cart provider item insertion and button scale animation,
+  /// or navigates to `/cart` if item was already added during this session.
   void _handleAddToCart() {
     if (_addedToCart) {
       context.push('/cart');
@@ -55,6 +64,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
 
   @override
   Widget build(BuildContext context) {
+
     final theme = Theme.of(context);
     final product = widget.product;
 
@@ -226,6 +236,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen>
   }
 }
 
+/// Helper widget rendering full, half, and outline star icons based on rating double.
 class _RatingRow extends StatelessWidget {
   final double rating;
   final int reviewCount;
@@ -268,11 +279,13 @@ class _RatingRow extends StatelessWidget {
   }
 }
 
+/// Helper row displaying an icon with informational text (shipping, returns, etc.).
 class _InfoRow extends StatelessWidget {
   final IconData icon;
   final String label;
 
   const _InfoRow({required this.icon, required this.label});
+
 
   @override
   Widget build(BuildContext context) {
