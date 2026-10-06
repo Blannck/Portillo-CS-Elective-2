@@ -1,52 +1,78 @@
 import 'package:flutter/material.dart';
 
 class EmptyView extends StatelessWidget {
+  final String title;
+  final String description;
   final VoidCallback onRefresh;
+  final String buttonLabel;
 
   const EmptyView({
     super.key,
+    this.title = 'NO POKÉMON DETECTED',
+    this.description = 'No specimen entries match your current search or filter query.',
     required this.onRefresh,
+    this.buttonLabel = 'RESET FILTERS',
   });
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+      child: Container(
+        margin: const EdgeInsets.all(24),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+        decoration: BoxDecoration(
+          color: const Color(0xFF1E272C),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: const Color(0xFF37474F), width: 2),
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              Icons.catching_pokemon_rounded,
-              size: 64,
-              color: Colors.grey.shade400,
+            const Icon(
+              Icons.radar_rounded,
+              size: 56,
+              color: Colors.amberAccent,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 14),
             Text(
-              'No Pokémon Found',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              title,
+              style: const TextStyle(
+                fontFamily: 'monospace',
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.1,
+                color: Colors.amberAccent,
+              ),
+              textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 10),
             Text(
-              'The Pokédex is currently empty. Try refreshing the list.',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey.shade600,
+              description,
+              style: const TextStyle(
+                fontFamily: 'monospace',
+                fontSize: 12,
+                color: Colors.white70,
               ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
             OutlinedButton.icon(
               onPressed: onRefresh,
-              icon: const Icon(Icons.refresh_rounded),
-              label: const Text('Refresh'),
+              icon: const Icon(Icons.refresh_rounded, size: 18),
+              label: Text(
+                buttonLabel,
+                style: const TextStyle(
+                  fontFamily: 'monospace',
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1,
+                ),
+              ),
               style: OutlinedButton.styleFrom(
-                foregroundColor: Colors.redAccent,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                foregroundColor: Colors.cyanAccent,
+                side: const BorderSide(color: Colors.cyanAccent, width: 1.5),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(10),
                 ),
               ),
             ),
