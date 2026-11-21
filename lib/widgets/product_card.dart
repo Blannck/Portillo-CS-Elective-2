@@ -6,6 +6,7 @@ import '../pages/admin/add_edit_product_page.dart';
 import '../pages/product_detail_page.dart';
 import '../providers/cart_provider.dart';
 import '../providers/product_provider.dart';
+import 'product_image.dart';
 
 class ProductCard extends ConsumerWidget {
   final Product product;
@@ -124,27 +125,13 @@ class ProductCard extends ConsumerWidget {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  // Image
-                  product.imageUrl != null && product.imageUrl!.isNotEmpty
-                      ? Image.network(
-                          product.imageUrl!,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, _, _) => _buildPlaceholder(),
-                          loadingBuilder: (ctx, child, progress) {
-                            if (progress == null) return child;
-                            return Container(
-                              color: Colors.grey.shade100,
-                              child: const Center(
-                                child: SizedBox(
-                                  width: 24,
-                                  height: 24,
-                                  child: CircularProgressIndicator(strokeWidth: 2),
-                                ),
-                              ),
-                            );
-                          },
-                        )
-                      : _buildPlaceholder(),
+                  // Appropriate Product Image
+                  ProductImage(
+                    imageUrl: product.imageUrl,
+                    productName: product.name,
+                    categoryId: product.categoryId,
+                    fit: BoxFit.cover,
+                  ),
 
                   // Stock status tag (top left)
                   Positioned(

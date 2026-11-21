@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../constants/app_colors.dart';
 import '../../models/product.dart';
 import '../../providers/category_provider.dart';
@@ -28,26 +29,10 @@ class _AddEditProductPageState extends ConsumerState<AddEditProductPage> {
 
   // Curated sample pickleball images for convenience
   final List<Map<String, String>> _imagePresets = [
-    {
-      'label': 'Carbon Paddle',
-      'url':
-          'https://images.unsplash.com/photo-1617083934555-563d404092b3?w=600&auto=format&fit=crop&q=80',
-    },
-    {
-      'label': 'Court Shoes',
-      'url':
-          'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&auto=format&fit=crop&q=80',
-    },
-    {
-      'label': 'Pickleballs',
-      'url':
-          'https://images.unsplash.com/photo-1587280501635-68a0e82cd5ff?w=600&auto=format&fit=crop&q=80',
-    },
-    {
-      'label': 'Tour Backpack',
-      'url':
-          'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&auto=format&fit=crop&q=80',
-    },
+    {'label': 'Carbon Paddle', 'url': 'assets/images/paddle_carbon.png'},
+    {'label': 'Court Shoes', 'url': 'assets/images/court_shoes.png'},
+    {'label': 'Pickleballs', 'url': 'assets/images/pickleballs.png'},
+    {'label': 'Tour Backpack', 'url': 'assets/images/backpack.png'},
   ];
 
   @override
@@ -86,7 +71,9 @@ class _AddEditProductPageState extends ConsumerState<AddEditProductPage> {
       final imageUrl = _imageUrlController.text.trim();
 
       if (_isEditing) {
-        await ref.read(productProvider.notifier).updateProduct(
+        await ref
+            .read(productProvider.notifier)
+            .updateProduct(
               widget.product!.copyWith(
                 name: name,
                 description: desc.isNotEmpty ? desc : null,
@@ -97,7 +84,9 @@ class _AddEditProductPageState extends ConsumerState<AddEditProductPage> {
               ),
             );
       } else {
-        await ref.read(productProvider.notifier).addProduct(
+        await ref
+            .read(productProvider.notifier)
+            .addProduct(
               Product(
                 id: 0,
                 name: name,
@@ -114,7 +103,9 @@ class _AddEditProductPageState extends ConsumerState<AddEditProductPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              _isEditing ? 'Product updated successfully' : 'Product created successfully',
+              _isEditing
+                  ? 'Product updated successfully'
+                  : 'Product created successfully',
             ),
             backgroundColor: AppColors.success,
           ),
@@ -185,10 +176,7 @@ class _AddEditProductPageState extends ConsumerState<AddEditProductPage> {
                   ),
                   items: [
                     for (final c in categories)
-                      DropdownMenuItem(
-                        value: c.id,
-                        child: Text(c.name),
-                      ),
+                      DropdownMenuItem(value: c.id, child: Text(c.name)),
                   ],
                   onChanged: (val) => setState(() => _categoryId = val),
                   validator: (val) =>
@@ -350,7 +338,9 @@ class _AddEditProductPageState extends ConsumerState<AddEditProductPage> {
                 label: Text(
                   _saving
                       ? 'Saving Product...'
-                      : (_isEditing ? 'Update Product' : 'Add Product to Catalog'),
+                      : (_isEditing
+                            ? 'Update Product'
+                            : 'Add Product to Catalog'),
                 ),
               ),
             ],

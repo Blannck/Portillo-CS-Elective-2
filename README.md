@@ -1,7 +1,6 @@
 # 🏓 PicklePro — Pickleball E-Commerce Flutter Application
 
 > **CS Elective 2 — Final Exam Project**  
-> Built with Flutter 3.47+, Riverpod state management, and Supabase backend (PostgreSQL, Auth, Storage, Row-Level Security, and Triggers).
 
 ---
 

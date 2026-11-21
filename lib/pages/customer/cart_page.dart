@@ -4,6 +4,7 @@ import '../../constants/app_colors.dart';
 import '../../models/cart_item.dart';
 import '../../providers/cart_provider.dart';
 import '../../providers/order_provider.dart';
+import '../../widgets/product_image.dart';
 import 'checkout_confirmation_page.dart';
 
 class CartPage extends ConsumerWidget {
@@ -244,27 +245,16 @@ class CartPage extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Thumbnail
-            Container(
-              width: 70,
-              height: 70,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: Colors.grey.shade100,
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: ProductImage(
+                imageUrl: p.imageUrl,
+                productName: p.name,
+                categoryId: p.categoryId,
+                fit: BoxFit.cover,
+                width: 70,
+                height: 70,
               ),
-              clipBehavior: Clip.antiAlias,
-              child: p.imageUrl != null && p.imageUrl!.isNotEmpty
-                  ? Image.network(
-                      p.imageUrl!,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, _, _) => const Icon(
-                        Icons.sports_tennis,
-                        color: AppColors.primary,
-                      ),
-                    )
-                  : const Icon(
-                      Icons.sports_tennis,
-                      color: AppColors.primary,
-                    ),
             ),
             const SizedBox(width: 12),
 

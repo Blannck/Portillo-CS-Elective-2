@@ -5,6 +5,7 @@ import '../models/product.dart';
 import '../providers/cart_provider.dart';
 import '../providers/category_provider.dart';
 import '../providers/product_provider.dart';
+import '../widgets/product_image.dart';
 import 'admin/add_edit_product_page.dart';
 import 'customer/cart_page.dart';
 
@@ -77,28 +78,16 @@ class _ProductDetailPageState extends ConsumerState<ProductDetailPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 // Hero Image
-                Container(
+                SizedBox(
                   height: 300,
-                  color: Colors.grey.shade100,
-                  child: product.imageUrl != null && product.imageUrl!.isNotEmpty
-                      ? Image.network(
-                          product.imageUrl!,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, _, _) => const Center(
-                            child: Icon(
-                              Icons.sports_tennis,
-                              size: 80,
-                              color: AppColors.primary,
-                            ),
-                          ),
-                        )
-                      : const Center(
-                          child: Icon(
-                            Icons.sports_tennis,
-                            size: 80,
-                            color: AppColors.primary,
-                          ),
-                        ),
+                  child: ProductImage(
+                    imageUrl: product.imageUrl,
+                    productName: product.name,
+                    categoryId: product.categoryId,
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    height: 300,
+                  ),
                 ),
 
                 Padding(

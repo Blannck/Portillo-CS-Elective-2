@@ -423,7 +423,7 @@ INSERT INTO public.products (name, price, stock, category_id, description, image
   12,
   1,
   'Elite raw Toray T700 carbon fiber face designed for maximum spin, plush touch, and pinpoint control on dinks and resets.',
-  'https://images.unsplash.com/photo-1617083934555-563d404092b3?w=600&auto=format&fit=crop&q=80'
+  'assets/images/paddle_carbon.png'
 ),
 (
   'JOOLA Ben Johns Hyperion CFS 16mm Paddle',
@@ -431,7 +431,7 @@ INSERT INTO public.products (name, price, stock, category_id, description, image
   8,
   1,
   'The official signature paddle of world #1 Ben Johns. Carbon Friction Surface (CFS) and Reactive Honeycomb Core for massive power and explosive drives.',
-  'https://images.unsplash.com/photo-1599586120429-48281b6f0ece?w=600&auto=format&fit=crop&q=80'
+  'assets/images/paddle_three.png'
 ),
 (
   'CRBN-1X Power Series 14mm Paddle',
@@ -439,7 +439,7 @@ INSERT INTO public.products (name, price, stock, category_id, description, image
   10,
   1,
   'Elongated tournament-grade paddle featuring reinforced edge foam perimeter for higher stability, sweet spot expansion, and lethal speed.',
-  'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&auto=format&fit=crop&q=80'
+  'assets/images/paddle_pro.png'
 ),
 (
   'Franklin Signature Pro 13mm Lightweight Paddle',
@@ -447,7 +447,7 @@ INSERT INTO public.products (name, price, stock, category_id, description, image
   25,
   1,
   'MaxGrit surface technology for dampening vibration and precision slice. USAPA approved for sanctioned tournament play.',
-  'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=600&auto=format&fit=crop&q=80'
+  'assets/images/paddle_carbon.png'
 ),
 (
   'K-Swiss Hypercourt Express 2 Pickleball Shoes',
@@ -455,7 +455,7 @@ INSERT INTO public.products (name, price, stock, category_id, description, image
   15,
   2,
   'Specifically engineered for the multi-directional agility, quick lateral pivots, and court friction of high-level pickleball.',
-  'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&auto=format&fit=crop&q=80'
+  'assets/images/court_shoes.png'
 ),
 (
   'Babolat Jet Mach 3 Court Shoes',
@@ -463,7 +463,7 @@ INSERT INTO public.products (name, price, stock, category_id, description, image
   7,
   2,
   'Ultra-lightweight Matryx EVO fabric with Michelin rubber outsoles for exceptional court grip, durability, and shock absorption.',
-  'https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=600&auto=format&fit=crop&q=80'
+  'assets/images/court_shoes.png'
 ),
 (
   'Asics Gel-Renma Pickleball Performance Shoes',
@@ -471,7 +471,7 @@ INSERT INTO public.products (name, price, stock, category_id, description, image
   18,
   2,
   'Forefoot GEL cushioning technology and TRUSSTIC support system designed for stable side-to-side movements and hard court resilience.',
-  'https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?w=600&auto=format&fit=crop&q=80'
+  'assets/images/court_shoes.png'
 ),
 (
   'Franklin X-40 Performance Outdoor Pickleballs (12-Pack)',
@@ -479,7 +479,7 @@ INSERT INTO public.products (name, price, stock, category_id, description, image
   50,
   3,
   'The official outdoor ball of the US Open Pickleball Championships. 40 precision machine-drilled holes for true flight and wind resistance.',
-  'https://images.unsplash.com/photo-1587280501635-68a0e82cd5ff?w=600&auto=format&fit=crop&q=80'
+  'assets/images/pickleballs.png'
 ),
 (
   'Dura Fast 40 Outdoor Competition Balls (6-Pack)',
@@ -487,7 +487,7 @@ INSERT INTO public.products (name, price, stock, category_id, description, image
   35,
   3,
   'Original seamless molded balls engineered for rapid pace, crisp pop, and pro tour level play in hot and windy conditions.',
-  'https://images.unsplash.com/photo-1511067007398-7e4b90cfa4bc?w=600&auto=format&fit=crop&q=80'
+  'assets/images/pickleballs.png'
 ),
 (
   'Selkirk Tour Performance Tour Pro Backpack',
@@ -495,7 +495,7 @@ INSERT INTO public.products (name, price, stock, category_id, description, image
   14,
   4,
   'Heavy-duty +V11 polyfiber bag with dedicated thermal paddle compartment, ventilated shoe garage, laptop sleeve, and fence hook.',
-  'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&auto=format&fit=crop&q=80'
+  'assets/images/backpack.png'
 ),
 (
   'JOOLA Vision II Compact Pickleball Duffle Bag',
@@ -503,7 +503,7 @@ INSERT INTO public.products (name, price, stock, category_id, description, image
   20,
   4,
   'Versatile court bag with dual paddle pockets, padded shoulder straps, and accessory organizers for balls, towels, and water bottles.',
-  'https://images.unsplash.com/photo-1546938576-6e6a64f317cc?w=600&auto=format&fit=crop&q=80'
+  'assets/images/backpack.png'
 ),
 (
   'Tourna Mega Tac Ultra-Tacky Pickleball Overgrips (3-Pack)',
@@ -511,7 +511,7 @@ INSERT INTO public.products (name, price, stock, category_id, description, image
   60,
   5,
   'The ultimate tacky grip that will not slip even in sweaty tournament matches. Prolongs paddle handle life and maximizes comfort.',
-  'https://images.unsplash.com/photo-1584551246679-0daf3d275d0f?w=600&auto=format&fit=crop&q=80'
+  'assets/images/paddle_three.png'
 ),
 (
   'Pickle-Pro Lead Weighted Balancing Tape (20g)',
@@ -519,7 +519,7 @@ INSERT INTO public.products (name, price, stock, category_id, description, image
   40,
   5,
   'High-density self-adhesive lead tape to customize paddle swing weight, stability against off-center hits, and power delivery.',
-  'https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=600&auto=format&fit=crop&q=80'
+  'assets/images/paddle_three.png'
 ),
 (
   'Franklin Portable Tournament Half-Court Net System',
@@ -527,7 +527,7 @@ INSERT INTO public.products (name, price, stock, category_id, description, image
   6,
   6,
   'Official 22-foot regulation width net with powder-coated steel frame, easy tension straps, center support rod, and travel carry bag.',
-  'https://images.unsplash.com/photo-1521537634581-0dced2fedc42?w=600&auto=format&fit=crop&q=80'
+  'assets/images/court_net.png'
 );
 
 -- Reset sequence for products
