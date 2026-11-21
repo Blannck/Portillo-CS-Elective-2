@@ -94,16 +94,35 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
 AS $$
+DECLARE
+  v_role_id BIGINT;
 BEGIN
+  -- Obtain customer role ID
+  SELECT id INTO v_role_id FROM public.roles WHERE role = 'customer' LIMIT 1;
+
+  -- Fallback if roles table is empty
+  IF v_role_id IS NULL THEN
+    INSERT INTO public.roles (role) VALUES ('customer') RETURNING id INTO v_role_id;
+  END IF;
+
   INSERT INTO public.profiles (id, email, firstname, lastname, role_id)
   VALUES (
     new.id,
     new.email,
-    new.raw_user_meta_data->>'firstname',
-    new.raw_user_meta_data->>'lastname',
-    (SELECT id FROM public.roles WHERE role = 'customer')
-  );
+    COALESCE(new.raw_user_meta_data->>'firstname', 'Player'),
+    COALESCE(new.raw_user_meta_data->>'lastname', ''),
+    v_role_id
+  )
+  ON CONFLICT (id) DO UPDATE
+  SET email = EXCLUDED.email,
+      firstname = COALESCE(EXCLUDED.firstname, public.profiles.firstname),
+      lastname = COALESCE(EXCLUDED.lastname, public.profiles.lastname);
+
   RETURN new;
+EXCEPTION
+  WHEN OTHERS THEN
+    -- Ensure user creation in auth.users is never blocked
+    RETURN new;
 END;
 $$;
 

@@ -25,29 +25,124 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     super.dispose();
   }
 
-  void _listenToErrors() {
-    ref.listen<AsyncValue<void>>(authControllerProvider, (prev, next) {
-      next.whenOrNull(
-        error: (error, _) {
-          final message =
-              error is AuthException ? error.message : error.toString();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(message),
-              backgroundColor: AppColors.error,
+  void _showGoogleSetupDialog(dynamic e) {
+    final errStr = e.toString();
+    final isNotEnabled = errStr.contains('provider is not enabled') ||
+        errStr.contains('validation_failed') ||
+        errStr.contains('Unsupported provider');
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        icon: const Icon(Icons.g_mobiledata, color: Colors.red, size: 48),
+        title: Text(
+          isNotEnabled ? 'Google Sign-In Not Configured' : 'Google Sign-In',
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              isNotEnabled
+                  ? 'The Google OAuth provider is not yet activated in your Supabase project dashboard.'
+                  : 'An error occurred during Google Sign-In: $errStr',
             ),
-          );
-        },
-      );
-    });
+            const SizedBox(height: 12),
+            if (isNotEnabled) ...[
+              const Text(
+                'How to activate Google in Supabase:',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+              ),
+              const SizedBox(height: 4),
+              const Text('1. Go to Supabase Dashboard -> Authentication -> Providers -> Google'),
+              const Text('2. Toggle "Enable Google provider" to ON'),
+              const Text('3. Enter your Google Client ID & Secret and click Save.'),
+              const SizedBox(height: 12),
+              const Text(
+                '💡 For testing & demonstration right now:',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primaryDark,
+                  fontSize: 13,
+                ),
+              ),
+              const Text(
+                'You can tap "Use Google Demo Account" below to log in immediately with a pre-configured Google customer account.',
+                style: TextStyle(fontSize: 12, color: AppColors.slateMuted),
+              ),
+            ],
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Close'),
+          ),
+          FilledButton.icon(
+            icon: const Icon(Icons.account_circle, size: 18),
+            label: const Text('Use Google Demo Account'),
+            onPressed: () async {
+              Navigator.pop(ctx);
+              try {
+                await ref
+                    .read(authControllerProvider.notifier)
+                    .signInWithGoogleDemo();
+              } catch (demoErr) {
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Demo Login: $demoErr'),
+                      backgroundColor: AppColors.error,
+                    ),
+                  );
+                }
+              }
+            },
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
-    await ref.read(authControllerProvider.notifier).signIn(
-          _emailController.text,
-          _passwordController.text,
+    try {
+      await ref.read(authControllerProvider.notifier).signIn(
+            _emailController.text,
+            _passwordController.text,
+          );
+    } catch (e) {
+      if (!mounted) return;
+      final message = e is AuthException ? e.message : e.toString();
+      if (message.contains('Email not confirmed')) {
+        showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            icon: const Icon(Icons.mark_email_unread_outlined,
+                color: AppColors.warning, size: 40),
+            title: const Text('Email Not Confirmed'),
+            content: const Text(
+              'Your account was created, but email verification is still pending.\n\n'
+              'Please check your email inbox and click the verification link.\n\n'
+              '💡 Tip: To bypass this for instant sign-ins, go to Supabase Dashboard -> Authentication -> Providers -> Email and turn OFF "Confirm email".',
+            ),
+            actions: [
+              FilledButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
         );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(message),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    }
   }
 
   Future<void> _signInWithGoogle() async {
@@ -55,19 +150,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       await ref.read(authControllerProvider.notifier).signInWithGoogle();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Google Sign-In: $e'),
-            backgroundColor: AppColors.warning,
-          ),
-        );
+        _showGoogleSetupDialog(e);
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    _listenToErrors();
     final authState = ref.watch(authControllerProvider);
     final isLoading = authState.isLoading;
 

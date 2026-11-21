@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../constants/app_colors.dart';
 import '../../providers/auth_providers.dart';
+import 'signup_confirmation_page.dart';
 
 class SignupPage extends ConsumerStatefulWidget {
   const SignupPage({super.key});
@@ -30,44 +31,104 @@ class _SignupPageState extends ConsumerState<SignupPage> {
     super.dispose();
   }
 
-  void _listenToAuth() {
-    ref.listen<AsyncValue<void>>(authControllerProvider, (prev, next) {
-      next.whenOrNull(
-        error: (error, _) {
-          final message =
-              error is AuthException ? error.message : error.toString();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(message),
-              backgroundColor: AppColors.error,
-            ),
-          );
-        },
-      );
-    });
+  void _handleSignupError(dynamic error) {
+    final message = error is AuthException ? error.message : error.toString();
 
-    ref.listen<AsyncValue<AuthState>>(authStateProvider, (prev, next) {
-      final session = next.value?.session;
-      if (session != null && mounted) {
-        Navigator.of(context).popUntil((route) => route.isFirst);
-      }
-    });
+    if (message.contains('over_email_send_rate_limit') ||
+        message.contains('rate limit')) {
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          icon: const Icon(
+            Icons.timer_outlined,
+            color: AppColors.warning,
+            size: 40,
+          ),
+          title: const Text('Email Rate Limit Reached (429)'),
+          content: const Text(
+            'Supabase has "Confirm email" enabled and limits free verification emails to 3-4 per hour.\n\n'
+            'To fix this and enable instant unlimited signups:\n'
+            '1. Open your Supabase Dashboard\n'
+            '2. Go to Authentication -> Providers -> Email\n'
+            '3. Turn OFF (uncheck) "Confirm email"\n'
+            '4. Click Save and try again!',
+          ),
+          actions: [
+            FilledButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Understood'),
+            ),
+          ],
+        ),
+      );
+    } else if (message.contains('already registered') ||
+        message.contains('User already registered')) {
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Account Already Exists'),
+          content: Text(
+            'An account with ${_emailController.text} already exists. Please sign in instead.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () {
+                Navigator.pop(ctx);
+                Navigator.pop(context);
+              },
+              child: const Text('Go to Sign In'),
+            ),
+          ],
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    }
   }
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
-    await ref.read(authControllerProvider.notifier).signUp(
-          email: _emailController.text,
-          password: _passwordController.text,
-          firstname: _firstNameController.text,
-          lastname: _lastNameController.text,
-        );
+    try {
+      final response =
+          await ref.read(authControllerProvider.notifier).signUp(
+                email: _emailController.text,
+                password: _passwordController.text,
+                firstname: _firstNameController.text,
+                lastname: _lastNameController.text,
+              );
+
+      if (!mounted) return;
+
+      // Always show the Confirmation Screen on successful signup!
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => SignupConfirmationPage(
+            email: _emailController.text.trim(),
+            firstName: _firstNameController.text.trim(),
+            isAutoConfirmed: response?.session != null,
+          ),
+        ),
+      );
+    } catch (e) {
+      if (mounted) {
+        _handleSignupError(e);
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    _listenToAuth();
     final authState = ref.watch(authControllerProvider);
     final isLoading = authState.isLoading;
 
@@ -104,7 +165,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                         child: TextFormField(
                           controller: _firstNameController,
                           decoration: const InputDecoration(
-                            labelText: 'First Name',
+                            labelText: 'First Name *',
                             prefixIcon: Icon(Icons.person_outline),
                           ),
                           validator: (v) =>
@@ -116,7 +177,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                         child: TextFormField(
                           controller: _lastNameController,
                           decoration: const InputDecoration(
-                            labelText: 'Last Name',
+                            labelText: 'Last Name *',
                             prefixIcon: Icon(Icons.person_outline),
                           ),
                           validator: (v) =>
@@ -132,12 +193,12 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
                     decoration: const InputDecoration(
-                      labelText: 'Email Address',
+                      labelText: 'Email Address *',
                       prefixIcon: Icon(Icons.email_outlined),
                     ),
                     validator: (v) {
                       if (v == null || v.trim().isEmpty) return 'Required';
-                      if (!v.contains('@')) return 'Enter valid email';
+                      if (!v.contains('@')) return 'Enter a valid email';
                       return null;
                     },
                   ),
@@ -148,7 +209,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                     controller: _passwordController,
                     obscureText: _obscurePassword,
                     decoration: InputDecoration(
-                      labelText: 'Password',
+                      labelText: 'Password *',
                       prefixIcon: const Icon(Icons.lock_outline),
                       suffixIcon: IconButton(
                         icon: Icon(
@@ -176,7 +237,7 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                     controller: _confirmPasswordController,
                     obscureText: _obscurePassword,
                     decoration: const InputDecoration(
-                      labelText: 'Confirm Password',
+                      labelText: 'Confirm Password *',
                       prefixIcon: Icon(Icons.lock_outline),
                     ),
                     validator: (v) {

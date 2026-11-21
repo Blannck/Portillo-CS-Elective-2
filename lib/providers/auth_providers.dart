@@ -52,31 +52,57 @@ class AuthController extends AsyncNotifier<void> {
 
   Future<void> signIn(String email, String password) async {
     state = const AsyncLoading();
-    state = await AsyncValue.guard(
-      () => _service.signInWithEmailPassword(email, password),
-    );
+    try {
+      await _service.signInWithEmailPassword(email, password);
+      state = const AsyncData(null);
+    } catch (e, st) {
+      state = AsyncError(e, st);
+      rethrow;
+    }
   }
 
-  Future<void> signUp({
+  Future<AuthResponse?> signUp({
     required String email,
     required String password,
     required String firstname,
     required String lastname,
   }) async {
     state = const AsyncLoading();
-    state = await AsyncValue.guard(
-      () => _service.signUpWithEmailPassword(
+    try {
+      final res = await _service.signUpWithEmailPassword(
         email: email,
         password: password,
         firstname: firstname,
         lastname: lastname,
-      ),
-    );
+      );
+      state = const AsyncData(null);
+      return res;
+    } catch (e, st) {
+      state = AsyncError(e, st);
+      rethrow;
+    }
   }
 
   Future<void> signInWithGoogle() async {
     state = const AsyncLoading();
-    state = await AsyncValue.guard(() => _service.signInWithGoogle());
+    try {
+      await _service.signInWithGoogle();
+      state = const AsyncData(null);
+    } catch (e, st) {
+      state = AsyncError(e, st);
+      rethrow;
+    }
+  }
+
+  Future<void> signInWithGoogleDemo() async {
+    state = const AsyncLoading();
+    try {
+      await _service.signInWithGoogleDemo();
+      state = const AsyncData(null);
+    } catch (e, st) {
+      state = AsyncError(e, st);
+      rethrow;
+    }
   }
 
   Future<void> signOut() async {

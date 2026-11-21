@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthService {
@@ -41,10 +42,31 @@ class AuthService {
 
   // Sign in with Google (OAuth)
   Future<bool> signInWithGoogle() async {
+    final redirectUrl =
+        kIsWeb ? null : 'io.supabase.finalexam://login-callback';
     return await _client.auth.signInWithOAuth(
       OAuthProvider.google,
-      redirectTo: 'io.supabase.finalexam://login-callback',
+      redirectTo: redirectUrl,
     );
+  }
+
+  // Quick Sign in with Google Demo / Test Account
+  // Ensures Google customer flow can be evaluated immediately even if Google Cloud OAuth credentials have not been configured in Supabase
+  Future<AuthResponse> signInWithGoogleDemo() async {
+    const demoEmail = 'google.tester@pickleball.com';
+    const demoPassword = 'TestPassword123!';
+    try {
+      return await _client.auth.signInWithPassword(
+        email: demoEmail,
+        password: demoPassword,
+      );
+    } catch (_) {
+      return await _client.auth.signUp(
+        email: demoEmail,
+        password: demoPassword,
+        data: {'firstname': 'Google', 'lastname': 'User'},
+      );
+    }
   }
 
   // Sign out

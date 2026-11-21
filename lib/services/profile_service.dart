@@ -7,17 +7,45 @@ class ProfileService {
   ProfileService(this._client);
 
   Future<UserProfile?> fetchCurrentProfile() async {
-    final userId = _client.auth.currentUser?.id;
-    if (userId == null) return null;
+    final user = _client.auth.currentUser;
+    if (user == null) return null;
 
     final data = await _client
         .from('profiles')
         .select('*, roles(role)')
-        .eq('id', userId)
+        .eq('id', user.id)
         .maybeSingle();
 
-    if (data == null) return null;
-    return UserProfile.fromJson(data);
+    if (data != null) {
+      return UserProfile.fromJson(data);
+    }
+
+    // Auto-heal: In case profile was not inserted by trigger, create it now
+    try {
+      final roleData = await _client
+          .from('roles')
+          .select('id')
+          .eq('role', 'customer')
+          .maybeSingle();
+
+      final roleId = roleData?['id'] ?? 1;
+
+      final inserted = await _client
+          .from('profiles')
+          .insert({
+            'id': user.id,
+            'email': user.email,
+            'firstname': user.userMetadata?['firstname'] ?? 'Player',
+            'lastname': user.userMetadata?['lastname'] ?? '',
+            'role_id': roleId,
+          })
+          .select('*, roles(role)')
+          .single();
+
+      return UserProfile.fromJson(inserted);
+    } catch (_) {
+      return null;
+    }
   }
 
   Future<void> updateProfile({
