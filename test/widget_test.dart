@@ -1,30 +1,66 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:final_exam/main.dart';
+import 'package:final_exam/models/product.dart';
+import 'package:final_exam/models/cart_item.dart';
+import 'package:final_exam/providers/cart_provider.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  group('Pickleball E-Commerce Unit Tests', () {
+    test('Product model creation and calculation', () {
+      final product = Product(
+        id: 1,
+        name: 'Selkirk Vanguard Control',
+        description: 'Elite raw carbon paddle',
+        price: 199.99,
+        stock: 5,
+        categoryId: 1,
+      );
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+      expect(product.id, 1);
+      expect(product.name, 'Selkirk Vanguard Control');
+      expect(product.price, 199.99);
+      expect(product.stock, 5);
+      expect(product.isOutOfStock, false);
+      expect(product.isLowStock, true);
+    });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    test('CartItem subtotal calculation', () {
+      final product = Product(
+        id: 2,
+        name: 'Franklin X-40 Pickleballs (12-Pack)',
+        price: 34.99,
+        stock: 20,
+        categoryId: 3,
+      );
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+      final cartItem = CartItem(product: product, quantity: 3);
+      expect(cartItem.quantity, 3);
+      expect(cartItem.subtotal, closeTo(104.97, 0.001));
+    });
+
+    test('CartState totals and stock limit checks', () {
+      final p1 = Product(
+        id: 1,
+        name: 'Paddle',
+        price: 100.0,
+        stock: 2,
+        categoryId: 1,
+      );
+      final p2 = Product(
+        id: 2,
+        name: 'Shoes',
+        price: 50.0,
+        stock: 5,
+        categoryId: 2,
+      );
+
+      final state = CartState(items: [
+        CartItem(product: p1, quantity: 2),
+        CartItem(product: p2, quantity: 1),
+      ]);
+
+      expect(state.totalCount, 3);
+      expect(state.totalPrice, 250.0);
+      expect(state.isEmpty, false);
+    });
   });
 }
